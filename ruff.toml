@@ -1,0 +1,30 @@
+# Linting rules for PayCore. Run `ruff check .` before you open a pull request.
+line-length = 100
+target-version = "py311"
+
+exclude = [
+    ".venv",
+    "__pycache__",
+    "infra",
+    "k8s",
+    "policies",
+]
+
+[lint]
+select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # import sorting
+    "B",  # common bugs
+    "UP", # outdated syntax
+]
+
+[lint.flake8-bugbear]
+# FastAPI declares dependencies in argument defaults on purpose.
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Query",
+    "fastapi.Path",
+    "fastapi.Header",
+    "fastapi.Body",
+]

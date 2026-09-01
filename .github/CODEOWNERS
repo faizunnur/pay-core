@@ -1,0 +1,11 @@
+# Code owners for PayCore.
+#
+# This file is switched on in Week 6, when the release-engineer role starts and
+# reviewers teams are created. Until then it is intentionally empty: no owner is
+# claimed, so the branch protection rule on main is what gates every merge.
+#
+# Week 6 will look something like this:
+#
+# *                     @<your-org>/reviewers
+# /services/            @<your-org>/payments-team
+# /.github/workflows/   @<your-org>/platform-team
