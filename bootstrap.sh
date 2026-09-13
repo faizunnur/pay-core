@@ -228,8 +228,9 @@ else
 fi
 echo
 echo "Docker containers are blocked from the public interface:"
-iptables -L DOCKER-USER -n --line-numbers 2>/dev/null | head -5 || \
+iptables -L DOCKER-USER -n -v --line-numbers 2>/dev/null | head -5 || \
     echo "  ${RED}DOCKER-USER chain missing -- containers may be reachable from the internet.${NC}"
+echo "  (note the 'in' column: the DROP only matches traffic arriving on ${PUBLIC_IF}.)"
 echo "  (ufw alone does not do this -- see the comments in bootstrap.sh)"
 echo
 echo "Next steps — see the VM Setup Guide, sections 5.3 onward:"
