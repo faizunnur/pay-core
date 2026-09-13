@@ -76,7 +76,11 @@ fi
 
 # ---------------------------------------------------------------- firewall ---
 step "Configuring the firewall to allow SSH and nothing else"
-apt-get install -y -qq ufw
+
+apt-get install -y ufw || die "Failed to install UFW"
+
+command -v ufw >/dev/null 2>&1 || die "UFW installation failed: ufw command not found"
+
 ufw --force reset >/dev/null
 ufw default deny incoming >/dev/null
 ufw default allow outgoing >/dev/null
