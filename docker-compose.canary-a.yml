@@ -1,0 +1,42 @@
+# Canary A — "it is slow".
+#
+#   docker compose -f docker-compose.yml -f docker-compose.canary-a.yml up -d --build
+#
+# Brings up a SECOND PayCore on port 8001 alongside the stable one on 8000.
+# Same image, same database, same code. One environment variable is different:
+# this one talks to a rules service that takes two seconds to answer.
+#
+# PayCore's risk engine gives that call 250 ms (RISK_ENGINE_TIMEOUT_MS) and then
+# gives up and scores locally. So nothing fails. Every payment simply costs an
+# extra quarter of a second, for ever, and the error rate stays at zero.
+services:
+  rules-stub:
+    image: python:3.11-slim
+    container_name: paycore-rules-stub
+    restart: unless-stopped
+    command: ["python", "/app/rules_stub.py"]
+    volumes:
+      - ./ci/rules_stub.py:/app/rules_stub.py:ro
+    environment:
+      RULES_STUB_DELAY: "2.0"
+      RULES_STUB_PORT: "8080"
+
+  api-canary:
+    build: .
+    container_name: paycore-api-canary
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: db
+      REDIS_URL: redis://redis:6379/0
+      RULES_SERVICE_URL: http://rules-stub:8080/score
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rules-stub:
+        condition: service_started

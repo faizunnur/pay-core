@@ -1,0 +1,24 @@
+# Jenkins for Week 2 onward.  Start it with:
+#     docker compose -f ci/docker-compose.jenkins.yml up -d --build
+#
+# Jenkins keeps everything (jobs, credentials, build history) in the
+# jenkins_home volume, so you can stop and start it freely.
+services:
+  jenkins:
+    build:
+      context: ..
+      dockerfile: ci/Dockerfile.jenkins
+    image: paycore-jenkins:week2
+    container_name: paycore-jenkins
+    restart: unless-stopped
+    # NOTE: running Jenkins as root and handing it the host's Docker socket is
+    # convenient and genuinely dangerous. Week 8 comes back to exactly this.
+    user: root
+    ports:
+      - "127.0.0.1:8080:8080"     # loopback only: reach it through the VS Code tunnel
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  jenkins_home:

@@ -1,0 +1,31 @@
+# Canary B — "it is broken, and it says it is healthy".
+#
+#   docker compose -f docker-compose.yml -f docker-compose.canary-b.yml up -d --build
+#
+# A SECOND PayCore on port 8001. One environment variable is different, and it is
+# a typo: the database hostname. That is the whole fault. Somebody fat-fingered a
+# config value.
+#
+# What you will see:
+#   GET  /health    200  ok          <- the process is alive, so liveness is green
+#   GET  /ready     503  unavailable <- readiness knows the truth
+#   POST /payments  500              <- every single payment fails
+#
+# If your monitoring watches /health, this release looks perfect.
+services:
+  api-canary:
+    build: .
+    container_name: paycore-api-canary
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: db-typo-does-not-exist    # <- the entire incident
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started

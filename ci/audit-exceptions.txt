@@ -1,0 +1,14 @@
+# Accepted dependency findings.
+#
+# Every line here is a decision the team has made and can defend. Format:
+#
+#     <VULN-ID>    # <why it is not exploitable here> — reviewed <date>, revisit <date>
+#
+# Rules:
+#   * One id per line. The id is the one pip-audit prints (PYSEC-…, GHSA-…, CVE-…).
+#   * A justification is mandatory. "Too hard to fix" is not a justification;
+#     "this code path is never reached in PayCore" is.
+#   * Every exception gets a revisit date. An exception with no expiry is just
+#     a vulnerability with paperwork.
+#
+# This file starts empty on purpose. You fill it in Week 2, Lab 5.

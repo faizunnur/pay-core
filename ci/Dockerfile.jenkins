@@ -1,0 +1,35 @@
+# Jenkins for the PayCore bootcamp.
+#
+# The stock Jenkins image has Java and nothing else. Our pipeline needs Python
+# (lint, tests, dependency audit) and the Docker CLI (to build the image), so we
+# bake them in. Pre-installing the Python tools also means a build does not
+# re-download them every time, which matters when twenty students build at once.
+FROM jenkins/jenkins:lts-jdk17
+
+USER root
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv \
+        curl ca-certificates gnupg \
+ && rm -rf /var/lib/apt/lists/*
+
+# Docker CLI only — the daemon is the host's, reached through the mounted socket.
+RUN install -m 0755 -d /etc/apt/keyrings \
+ && curl -fsSL https://download.docker.com/linux/debian/gpg \
+      | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+ && chmod a+r /etc/apt/keyrings/docker.gpg \
+ && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+      > /etc/apt/sources.list.d/docker.list \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends docker-ce-cli \
+ && rm -rf /var/lib/apt/lists/*
+
+# The pipeline's toolchain, pinned to match requirements-dev.txt.
+RUN python3 -m venv /opt/ci-venv \
+ && /opt/ci-venv/bin/pip install --no-cache-dir --upgrade pip \
+ && /opt/ci-venv/bin/pip install --no-cache-dir \
+        ruff==0.8.4 pytest==8.3.4 httpx==0.28.1 pip-audit
+
+ENV PATH="/opt/ci-venv/bin:${PATH}"
