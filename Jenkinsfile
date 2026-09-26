@@ -38,7 +38,22 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'pytest — the suite runs on SQLite, so it needs no database'
-                sh 'pytest -q'
+                sh '''
+                    set -eu
+                    # Build the application's environment from requirements.txt rather
+                    # than trusting whatever the Jenkins image was baked with. If a
+                    # dependency changes, the tests run against the change - which is
+                    # the whole reason CI exists.
+                    #
+                    # It lives in .venv, which ruff.toml and .gitignore already exclude,
+                    # and it is deliberately SEPARATE from the image's own toolchain:
+                    # PayCore pins an old `requests` on purpose, and installing that
+                    # over pip-audit (which needs a newer one) would break the scanner
+                    # that is about to audit it.
+                    [ -d .venv ] || python3 -m venv .venv
+                    .venv/bin/pip install -q -r requirements.txt -r requirements-dev.txt
+                    .venv/bin/pytest -q
+                '''
             }
         }
 
