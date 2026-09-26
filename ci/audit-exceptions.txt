@@ -12,3 +12,17 @@
 #     a vulnerability with paperwork.
 #
 # This file starts empty on purpose. You fill it in Week 2, Lab 5.
+PYSEC-2026-1941   # starlette, pinned by fastapi==0.115.6 — upgrading FastAPI is a
+                  # migration, not a patch. Reviewed RR 2026-09-26, revisit 2026-12-15.
+PYSEC-2026-1942   # starlette, pinned by fastapi==0.115.6. Same migration.
+                  # Reviewed RR 2026-09-26, revisit 2026-12-15.
+PYSEC-2026-161    # starlette, pinned by fastapi==0.115.6. Same migration.
+                  # Reviewed RR 2026-09-26, revisit 2026-12-15.
+PYSEC-2026-248    # starlette, pinned by fastapi==0.115.6. Same migration.
+                  # Reviewed RR 2026-09-26, revisit 2026-12-15.
+PYSEC-2026-249    # starlette, pinned by fastapi==0.115.6. Same migration.
+                  # Reviewed RR 2026-09-26, revisit 2026-12-15.
+PYSEC-2026-2280   # starlette, pinned by fastapi==0.115.6. Same migration.
+                  # Reviewed RR 2026-09-26, revisit 2026-12-15.
+PYSEC-2026-2281   # starlette, pinned by fastapi==0.115.6. Same migration.
+                  # Reviewed RR 2026-09-26, revisit 2026-12-15.
